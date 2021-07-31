@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
         //gets database from the WordDatabase class
         getDatabase();
-
         sortBy(WORD, ASCENDING);
 
 
