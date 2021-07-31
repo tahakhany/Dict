@@ -9,12 +9,16 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,13 +50,19 @@ public class MainActivity extends AppCompatActivity {
     private Intent switchActivityToDictionary;
     private Intent switchActivityToSettings;
     private TextView mSearchBox;
+    private TextView mSortedByTextView;
     private ImageButton mSettingsButton;
+    private ImageButton mSortByButton;
     private RecyclerView recyclerView;
     private Toolbar mActionBarToolbar;
+
 
     public static final String WORD = "word";
     public static final String DEFINITION = "definition";
     public static final String USED_IN = "used_in";
+    public static Context APPLICATION_CONTEXT ;
+    private final boolean ASCENDING = true;
+    private final boolean DESCENDING = false;
 
     public static final String FILE_NAME = "dictionary_save_file";
 
@@ -65,13 +75,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //getActionBarToolbar();
         setContentView(R.layout.activity_main);
-
-
+        APPLICATION_CONTEXT = getApplicationContext();
 
         //initialising the views
         mSearchBox = findViewById(R.id.txt_search_box);
         recyclerView = findViewById(R.id.rcy_list);
         mSettingsButton = findViewById(R.id.btn_settings);
+        mSortByButton = findViewById(R.id.btn_sort_by);
+        mSortedByTextView = findViewById(R.id.txt_sorted_by);
 
         //intents needed for activity switching
         switchActivityToDictionary = new Intent(this, Definition.class);
@@ -80,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         //gets database from the WordDatabase class
         getDatabase();
 
-        sortBy(WORD);
+        sortBy(WORD, ASCENDING);
 
 
         //listener for any change or pressing enter in the search view
@@ -117,6 +128,42 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(switchActivityToSettings);
             }
         });
+
+        View.OnClickListener sortListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(MainActivity.this, view);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.menu_sort_by_word_ascending:
+                                sortBy(WORD, ASCENDING);
+                                updateFoundList(adapter.getArrayList(), recyclerView);
+                                break;
+                            case R.id.menu_sort_by_word_descending:
+                                sortBy(WORD, DESCENDING);
+                                updateFoundList(adapter.getArrayList(), recyclerView);
+                                break;
+                            case R.id.menu_sort_by_used_in_ascending:
+                                sortBy(USED_IN,ASCENDING);
+                                updateFoundList(adapter.getArrayList(), recyclerView);
+                                break;
+                            case R.id.menu_sort_by_used_in_descending:
+                                sortBy(USED_IN, DESCENDING);
+                                updateFoundList(adapter.getArrayList(), recyclerView);
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popup.inflate(R.menu.menu);
+                popup.show();
+            }
+        };
+
+        mSortByButton.setOnClickListener(sortListener);
+        mSortedByTextView.setOnClickListener(sortListener);
 
         //initialising the recycler view
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -180,25 +227,52 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void sortBy(String sortBy) {
-        for (int i = 0; i < mDictionary.size(); i++) {
-            for (int j = i + 1; j < mDictionary.size(); j++) {
-                switch (sortBy) {
-                    case WORD:
-                        if (mDictionary.get(i).getWord().compareTo(mDictionary.get(j).getWord()) > 0) {
-                            Collections.swap(mDictionary, i, j);
-                        }
-                        break;
-                    case DEFINITION:
-                        if (mDictionary.get(i).getDefinition().compareTo(mDictionary.get(j).getDefinition()) > 0) {
-                            Collections.swap(mDictionary, i, j);
-                        }
-                        break;
-                    case USED_IN:
-                        if (mDictionary.get(i).getUsedIn().compareTo(mDictionary.get(j).getUsedIn()) > 0) {
-                            Collections.swap(mDictionary, i, j);
-                        }
-                        break;
+    private void sortBy(String sortBy, boolean direction) {
+        if(direction == ASCENDING){
+            for (int i = 0; i < mDictionary.size(); i++) {
+                for (int j = i + 1; j < mDictionary.size(); j++) {
+                    switch (sortBy) {
+                        case WORD:
+                            mSortedByTextView.setText(getText(R.string.sorted_by_word_ascending));
+
+                            if (mDictionary.get(i).getWord().compareTo(mDictionary.get(j).getWord()) > 0) {
+                                Collections.swap(mDictionary, i, j);
+
+                            }
+                            break;
+
+                        case USED_IN:
+                            mSortedByTextView.setText(getText(R.string.sorted_by_usage_ascending));
+
+                            if (mDictionary.get(i).getUsedIn().compareTo(mDictionary.get(j).getUsedIn()) > 0) {
+                                Collections.swap(mDictionary, i, j);
+
+                            }
+
+                            break;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < mDictionary.size(); i++) {
+                for (int j = i + 1; j < mDictionary.size(); j++) {
+                    switch (sortBy) {
+                        case WORD:
+                            mSortedByTextView.setText(getText(R.string.sorted_by_word_descending));
+
+                            if (mDictionary.get(i).getWord().compareTo(mDictionary.get(j).getWord()) < 0) {
+                                Collections.swap(mDictionary, i, j);
+                            }
+                            break;
+
+                        case USED_IN:
+                            mSortedByTextView.setText(getText(R.string.sorted_by_usage_descending));
+
+                            if (mDictionary.get(i).getUsedIn().compareTo(mDictionary.get(j).getUsedIn()) < 0) {
+                                Collections.swap(mDictionary, i, j);
+                            }
+                            break;
+                    }
                 }
             }
         }
@@ -230,5 +304,13 @@ public class MainActivity extends AppCompatActivity {
         }
         return mActionBarToolbar;
     }*/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+
+    }
 }
 

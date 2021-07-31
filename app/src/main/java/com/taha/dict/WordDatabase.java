@@ -12,7 +12,16 @@ public class WordDatabase {
             new Dictionary("bcd", "bcdbcdbcd", "bcd")
     };
 
+    private static final String[] mSortByList = {
+            "Sort by word",
+            "Sort by usage"
+    };
+
     public static Dictionary[] getDictionary() {
         return mDictionary;
+    }
+
+    public static String[] getmSortByList(){
+        return mSortByList;
     }
 }

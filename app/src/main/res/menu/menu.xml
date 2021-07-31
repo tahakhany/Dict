@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_sort_by_word_ascending"
+        android:title="@string/option_menu_sort_by_word_ascending" />
+    <item
+        android:id="@+id/menu_sort_by_word_descending"
+        android:title="@string/option_menu_sort_by_word_descending" />
+    <item
+        android:id="@+id/menu_sort_by_used_in_ascending"
+        android:title="@string/option_menu_sort_by_usage_ascending" />
+    <item
+        android:id="@+id/menu_sort_by_used_in_descending"
+        android:title="@string/option_menu_sort_by_usage_descending" />
+</menu>

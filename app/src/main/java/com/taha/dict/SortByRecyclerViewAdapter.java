@@ -8,17 +8,16 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
+public class SortByRecyclerViewAdapter extends RecyclerView.Adapter<SortByRecyclerViewAdapter.ViewHolder> {
 
-    private List<Dictionary> mData;
+    private List<String> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    MyRecyclerViewAdapter(Context context, List<Dictionary> data) {
+    SortByRecyclerViewAdapter(Context context, List<String> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -26,17 +25,15 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.frame_layout, parent, false);
+        View view = mInflater.inflate(R.layout.sort_by_frame_layout, parent, false);
         return new ViewHolder(view);
     }
 
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String word = mData.get(position).getWord();
-        String usedIn = mData.get(position).getUsedIn();
-        holder.listWord.setText(word);
-        holder.listUsedIn.setText(usedIn);
+        String sortedBy = mData.get(position);
+        holder.sortByList.setText(sortedBy);
     }
 
     // total number of rows
@@ -48,13 +45,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView listWord;
-        TextView listUsedIn;
+        TextView sortByList;
 
         ViewHolder(View itemView) {
             super(itemView);
-            listWord = itemView.findViewById(R.id.txt_frame_word);
-            listUsedIn = itemView.findViewById(R.id.txt_frame_used_in);
+            sortByList = itemView.findViewById(R.id.txt_sort_by_frame_layout);
 
             itemView.setOnClickListener(this);
         }
@@ -67,7 +62,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // convenience method for getting data at click position
     String getItem(int id) {
-        return mData.get(id).getWord();
+        return mData.get(id);
     }
 
     // allows clicks events to be caught
@@ -78,9 +73,5 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
-    }
-
-    public ArrayList<Dictionary> getArrayList(){
-        return (ArrayList<Dictionary>) this.mData;
     }
 }
